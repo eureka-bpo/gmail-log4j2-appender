@@ -35,9 +35,15 @@ import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+/**
+ * Appends log events to GMail
+ * */
 @Plugin(name = "GMail", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class GMailAppender extends AbstractAppender {
 
+	/**
+	 * Builds GMailAppender instances
+	 * */
 	public static class Builder extends AbstractAppender.Builder<Builder>
 		implements org.apache.logging.log4j.core.util.Builder<GMailAppender> {
 
@@ -102,6 +108,11 @@ public class GMailAppender extends AbstractAppender {
 		}
 	}
 
+	/**
+	 * Log4j2 convenient builder method
+	 * 
+	 * @return Bilder instance
+	 * */
 	@PluginBuilderFactory
 	public static Builder newBuilder() {
 		return new Builder();
@@ -112,7 +123,7 @@ public class GMailAppender extends AbstractAppender {
 	private String subject;
 	private Gmail gMailClient;
 
-	protected GMailAppender(String name, Filter filter, Layout<? extends Serializable> layout,
+	private GMailAppender(String name, Filter filter, Layout<? extends Serializable> layout,
 			boolean ignoreExceptions, Property[] properties, Gmail gMailClient, String sender,
 			String recipients, String subject) {
 		super(name, filter, layout, ignoreExceptions, properties);
