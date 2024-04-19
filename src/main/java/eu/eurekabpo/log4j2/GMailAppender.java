@@ -96,7 +96,7 @@ public class GMailAppender extends AbstractAppender {
 				return new GMailAppender(getName(), getFilter(), this.getOrCreateLayout(), isIgnoreExceptions(), getPropertyArray(),
 						client, delegate, recipients, subject);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error(e.getMessage(), e);
 				return null;
 			}
 		}
@@ -129,7 +129,7 @@ public class GMailAppender extends AbstractAppender {
 			MimeMessage javaMailMessage = getJavaMailMessage(eventStr);
 			gMailClient.users().messages().send(sender, getGMailMessage(javaMailMessage)).execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage(), e);
 		}
 	}
 	
