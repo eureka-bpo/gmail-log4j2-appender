@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>GMail Log4j2 Appender</name>
-	<description>Eureka-BPO Primefaces tag library</description>
+	<description>GMail Log4j2 Appender</description>
 	<url>https://github.com/eureka-bpo/gmail-log4j2-appender.git</url>
 
 	<scm>
