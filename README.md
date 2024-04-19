@@ -19,7 +19,7 @@ The simplest appender configuration for usage with log4j2:
 #### Attributes description
 
 * serviceAccountKey - absolute path to key file of [service account](https://cloud.google.com/iam/docs/service-account-overview)
-* delegate - user account, which [delegates](https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority) sending emails to service account
+* delegate - user account, which [delegates](https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority) sending emails to service account<br/>__Note__: on step 5 scope `https://www.googleapis.com/auth/gmail.send` should be granted
 * subject - subject of sending emails
 * recipients - list of recipients of sending emails. Must follow [RFC822](https://datatracker.ietf.org/doc/html/rfc822) syntax
 
