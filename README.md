@@ -1,3 +1,5 @@
+[![Maven](https://img.shields.io/maven-central/v/eu.eureka-bpo.log4j2/gmail-appender.svg)](https://repo.maven.apache.org/maven2/eu/eureka-bpo/log4j2/gmail-appender/)
+
 ## GMail Appender for Log4j2
 
 With help of this appender user can receive notifications about errors direct on GMail.
