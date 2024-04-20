@@ -102,7 +102,7 @@ public class GMailAppender extends AbstractAppender {
 				return new GMailAppender(getName(), getFilter(), this.getOrCreateLayout(), isIgnoreExceptions(), getPropertyArray(),
 						client, delegate, recipients, subject);
 			} catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
+				LOGGER.error("Error has acquired while create GMail client", e);
 				return null;
 			}
 		}
@@ -139,8 +139,9 @@ public class GMailAppender extends AbstractAppender {
 			String eventStr = toSerializable(event).toString();
 			MimeMessage javaMailMessage = getJavaMailMessage(eventStr);
 			gMailClient.users().messages().send(sender, getGMailMessage(javaMailMessage)).execute();
+			LOGGER.debug("event message successfully sent");
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.error("Error has acquired while messagse sendinge", e);
 		}
 	}
 	
