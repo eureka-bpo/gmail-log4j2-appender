@@ -11,7 +11,7 @@ Usage of GMail Appender is possible after [Google OAuth2 settings](https://devel
 The simplest appender configuration for usage with log4j2:
 
 ```xml
-  <GMail name="GMmailLogger"
+  <GMail name="GMailLogger"
     serviceAccountKey="/path/to/key/file.json"
     delegate="example@gmail.com"
     subject="Subject of emails"
@@ -36,7 +36,7 @@ Full example of log4j2 configuration with GMail appender:
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="[Log4j]%d{HH:mm:ss.SSS} %-5level - %msg%n" />
     </Console>
-    <GMail name="GMmailLogger"
+    <GMail name="GMailLogger"
       serviceAccountKey="/path/to/key/file.json"
       delegate="example@gmail.com"
       subject="Subject of emails"
@@ -46,7 +46,7 @@ Full example of log4j2 configuration with GMail appender:
   <Loggers>
     <Root level="info">
       <AppenderRef ref="Console" />
-      <AppenderRef ref="GMmailLogger" level="error" />
+      <AppenderRef ref="GMailLogger" level="error" />
     </Root>
   </Loggers>
 </Configuration>
