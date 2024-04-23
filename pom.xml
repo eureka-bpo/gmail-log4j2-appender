@@ -51,7 +51,7 @@
 
 		<compiler-plugin.version>3.13.0</compiler-plugin.version>
 		<surefire-plugin.version>3.2.5</surefire-plugin.version>
-		<shade-plugin.version>3.5.2</shade-plugin.version>
+		<maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
 		<maven-install-plugin.version>3.1.1</maven-install-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
@@ -103,7 +103,14 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>${shade-plugin.version}</version>
+				<version>${maven-shade-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+						<version>0.1.0</version>
+					</dependency>
+				</dependencies>
 				<configuration>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -142,10 +149,9 @@
 						<relocation>
 							<pattern>org</pattern>
 							<shadedPattern>${shade.package}.org</shadedPattern>
-							<excludes>
-								<exclude>org.apache.logging.log4j.**</exclude>
-								<exclude>org.eclipse.angus.**</exclude>
-							</excludes>
+							<includes>
+								<include>**</include>
+							</includes>
 						</relocation>
 					</relocations>
 					<filters>
@@ -173,6 +179,7 @@
 					</artifactSet>
 					<transformers>
 						<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer" />
+						<transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer" />
 					</transformers>
 				</configuration>
 				<executions>
