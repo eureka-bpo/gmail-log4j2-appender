@@ -54,4 +54,7 @@ Full example of log4j2 configuration with GMail appender:
 
 #### System requirements
 
-Requires Java 11 and Log4j >= 2.11
+Version        | System requirements
+---------------|---------------
+1.0.x          | Java >= 11, Log4j 2.11-2.23.1
+1.1.x          | Java >= 17, Log4j >= 2.11
