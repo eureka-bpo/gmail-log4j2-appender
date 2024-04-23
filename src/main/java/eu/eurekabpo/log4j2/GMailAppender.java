@@ -4,21 +4,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Property;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import org.apache.logging.log4j.plugins.Configurable;
+import org.apache.logging.log4j.plugins.Plugin;
+import org.apache.logging.log4j.plugins.PluginBuilderAttribute;
+import org.apache.logging.log4j.plugins.PluginFactory;
+import org.apache.logging.log4j.plugins.validation.constraints.Required;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.util.Utils;
@@ -38,14 +37,15 @@ import jakarta.mail.internet.MimeMessage;
 /**
  * Appends log events to GMail
  * */
-@Plugin(name = "GMail", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
+@Configurable(elementType = Appender.ELEMENT_TYPE, printObject = true)
+@Plugin("GMail")
 public class GMailAppender extends AbstractAppender {
 
 	/**
 	 * Builds GMailAppender instances
 	 * */
-	public static class Builder extends AbstractAppender.Builder<Builder>
-		implements org.apache.logging.log4j.core.util.Builder<GMailAppender> {
+	public static class Builder<B extends Builder<B>> extends AbstractAppender.Builder<B>
+		implements org.apache.logging.log4j.plugins.util.Builder<GMailAppender> {
 
 		@PluginBuilderAttribute
 		@Required(message = "No serviceAccountKey provided")
@@ -63,24 +63,24 @@ public class GMailAppender extends AbstractAppender {
 		@Required(message = "No subject provided")
 		private String subject;
 
-		public Builder setServiceAccountKey(String serviceAccountKey) {
+		public B setServiceAccountKey(String serviceAccountKey) {
 			this.serviceAccountKey = serviceAccountKey;
-			return this;
+			return asBuilder();
 		}
 
-		public Builder setDelegate(String delegate) {
+		public B setDelegate(String delegate) {
 			this.delegate = delegate;
-			return this;
+			return asBuilder();
 		}
 
-		public Builder setRecipients(String recipients) {
+		public B setRecipients(String recipients) {
 			this.recipients = recipients;
-			return this;
+			return asBuilder();
 		}
 
-		public Builder setSubject(String subject) {
+		public B setSubject(String subject) {
 			this.subject = subject;
-			return this;
+			return asBuilder();
 		}
 
 		private Gmail getGMailClient(File serviceAccountKeyFile, String delegate)
@@ -99,10 +99,10 @@ public class GMailAppender extends AbstractAppender {
 		public GMailAppender build() {
 			try {
 				Gmail client = getGMailClient(new File(serviceAccountKey), delegate);
-				return new GMailAppender(getName(), getFilter(), this.getOrCreateLayout(), isIgnoreExceptions(), getPropertyArray(),
+				return new GMailAppender(getName(), getFilter(), getOrCreateLayout(), isIgnoreExceptions(), getPropertyArray(),
 						client, delegate, recipients, subject);
 			} catch (IOException e) {
-				LOGGER.error("Error has acquired while create GMail client", e);
+				LOGGER.error("Error has acquired while GMail client creating", e);
 				return null;
 			}
 		}
@@ -113,9 +113,9 @@ public class GMailAppender extends AbstractAppender {
 	 * 
 	 * @return Bilder instance
 	 * */
-	@PluginBuilderFactory
-	public static Builder newBuilder() {
-		return new Builder();
+	@PluginFactory
+	public static <B extends Builder<B>> B newBuilder() {
+		return new Builder<B>().asBuilder();
 	}
 
 	private String sender;
@@ -123,9 +123,8 @@ public class GMailAppender extends AbstractAppender {
 	private String subject;
 	private Gmail gMailClient;
 
-	private GMailAppender(String name, Filter filter, Layout<? extends Serializable> layout,
-			boolean ignoreExceptions, Property[] properties, Gmail gMailClient, String sender,
-			String recipients, String subject) {
+	private GMailAppender(String name, Filter filter, Layout layout, boolean ignoreExceptions, Property[] properties,
+			Gmail gMailClient, String sender, String recipients, String subject) {
 		super(name, filter, layout, ignoreExceptions, properties);
 		this.gMailClient = gMailClient;
 		this.sender = sender;
@@ -136,15 +135,15 @@ public class GMailAppender extends AbstractAppender {
 	@Override
 	public void append(LogEvent event) {
 		try {
-			String eventStr = toSerializable(event).toString();
+			String eventStr = getLayout().toSerializable(event);
 			MimeMessage javaMailMessage = getJavaMailMessage(eventStr);
 			gMailClient.users().messages().send(sender, getGMailMessage(javaMailMessage)).execute();
 			LOGGER.debug("event message successfully sent");
 		} catch (Exception e) {
-			LOGGER.error("Error has acquired while messagse sendinge", e);
+			LOGGER.error("Error has acquired while message sending", e);
 		}
 	}
-	
+
 	private MimeMessage getJavaMailMessage(String body)
 			throws AddressException, MessagingException {
 		Properties props = new Properties();
@@ -155,7 +154,7 @@ public class GMailAppender extends AbstractAppender {
 		email.setText(body);
 		return email;
 	}
-	
+
 	private Message getGMailMessage(MimeMessage javaMailMessage) throws IOException, MessagingException {
 		Message message = new Message();
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();

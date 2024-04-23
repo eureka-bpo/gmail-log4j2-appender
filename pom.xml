@@ -46,9 +46,9 @@
 		<shade.package>eu.eurekabpo.log4j2.shaded</shade.package>
 		<gpg.executable>gpg</gpg.executable>
 		<nexus.host>s01.oss.sonatype.org</nexus.host>
-		
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+
 		<compiler-plugin.version>3.13.0</compiler-plugin.version>
 		<surefire-plugin.version>3.2.5</surefire-plugin.version>
 		<shade-plugin.version>3.5.2</shade-plugin.version>
@@ -58,8 +58,8 @@
 		<maven-gpg-plugin.version>3.2.3</maven-gpg-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version> 
 		
-		<log4j.version>2.23.1</log4j.version>
-		<google-api-services-mail.version>v1-rev20231218-2.0.0</google-api-services-mail.version>
+		<log4j.version>3.0.0-beta2</log4j.version>
+		<google-api-services-gmail.version>v1-rev20231218-2.0.0</google-api-services-gmail.version>
 	</properties>
 
 	<dependencies>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-gmail</artifactId>
-			<version>${google-api-services-mail.version}</version>
+			<version>${google-api-services-gmail.version}</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
