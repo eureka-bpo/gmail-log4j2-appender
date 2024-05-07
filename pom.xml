@@ -46,18 +46,19 @@
 		<shade.package>eu.eurekabpo.log4j2.shaded</shade.package>
 		<gpg.executable>gpg</gpg.executable>
 		<nexus.host>s01.oss.sonatype.org</nexus.host>
-		
+
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<compiler-plugin.version>3.13.0</compiler-plugin.version>
-		<surefire-plugin.version>3.2.5</surefire-plugin.version>
-		<shade-plugin.version>3.5.2</shade-plugin.version>
+		<maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+		<maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
 		<maven-install-plugin.version>3.1.1</maven-install-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>3.2.3</maven-gpg-plugin.version>
 		<nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version> 
-		
+
 		<log4j.version>2.23.1</log4j.version>
 		<google-api-services-mail.version>v1-rev20231218-2.0.0</google-api-services-mail.version>
 	</properties>
@@ -90,12 +91,31 @@
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${maven-enforcer-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>[11,12)</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${compiler-plugin.version}</version>
+				<version>${maven-compiler-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${surefire-plugin.version}</version>
+				<version>${maven-surefire-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
@@ -103,7 +123,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>${shade-plugin.version}</version>
+				<version>${maven-shade-plugin.version}</version>
 				<configuration>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
