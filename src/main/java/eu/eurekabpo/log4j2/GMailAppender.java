@@ -20,13 +20,14 @@ import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.util.Utils;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.Message;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
 
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
@@ -85,13 +86,13 @@ public class GMailAppender extends AbstractAppender {
 
 		private Gmail getGMailClient(File serviceAccountKeyFile, String delegate)
 				throws IOException {
-			HttpTransport transport = Utils.getDefaultTransport();
-			JsonFactory jsonFactory = Utils.getDefaultJsonFactory();
-			GoogleCredential credentials = GoogleCredential
-					.fromStream(new FileInputStream(serviceAccountKeyFile), transport, jsonFactory)
+			HttpTransport transport = new NetHttpTransport();
+			GoogleCredentials credentials = GoogleCredentials
+					.fromStream(new FileInputStream(serviceAccountKeyFile), () -> transport)
 					.createScoped(Arrays.asList(GmailScopes.GMAIL_SEND)).createDelegated(delegate);
 			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3");
-			Gmail client = new Gmail.Builder(transport, jsonFactory, credentials).build();
+			Gmail client = new Gmail.Builder(transport, GsonFactory.getDefaultInstance(), new HttpCredentialsAdapter(credentials))
+					.build();
 			return client;
 		}
 
