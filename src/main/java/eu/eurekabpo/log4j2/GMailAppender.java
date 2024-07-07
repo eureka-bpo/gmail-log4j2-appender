@@ -31,10 +31,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
 import jakarta.mail.Session;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 /**
  * Appends log events to GMail
@@ -64,6 +67,9 @@ public class GMailAppender extends AbstractAppender {
 		@Required(message = "No subject provided")
 		private String subject;
 
+		@PluginBuilderAttribute
+		private String contentType;
+
 		public Builder setServiceAccountKey(String serviceAccountKey) {
 			this.serviceAccountKey = serviceAccountKey;
 			return this;
@@ -84,6 +90,11 @@ public class GMailAppender extends AbstractAppender {
 			return this;
 		}
 
+		public Builder setContentType(String contentType) {
+			this.contentType = contentType;
+			return this;
+		}
+
 		private Gmail getGMailClient(File serviceAccountKeyFile, String delegate)
 				throws IOException {
 			HttpTransport transport = new NetHttpTransport();
@@ -101,7 +112,7 @@ public class GMailAppender extends AbstractAppender {
 			try {
 				Gmail client = getGMailClient(new File(serviceAccountKey), delegate);
 				return new GMailAppender(getName(), getFilter(), this.getOrCreateLayout(), isIgnoreExceptions(), getPropertyArray(),
-						client, delegate, recipients, subject);
+						client, delegate, recipients, subject, contentType);
 			} catch (IOException e) {
 				LOGGER.error("Error has acquired while create GMail client", e);
 				return null;
@@ -122,16 +133,18 @@ public class GMailAppender extends AbstractAppender {
 	private String sender;
 	private String recipients;
 	private String subject;
+	private String contentType;
 	private Gmail gMailClient;
 
 	private GMailAppender(String name, Filter filter, Layout<? extends Serializable> layout,
 			boolean ignoreExceptions, Property[] properties, Gmail gMailClient, String sender,
-			String recipients, String subject) {
+			String recipients, String subject, String contentType) {
 		super(name, filter, layout, ignoreExceptions, properties);
 		this.gMailClient = gMailClient;
 		this.sender = sender;
 		this.recipients = recipients;
 		this.subject = subject;
+		this.contentType = contentType;
 	}
 
 	@Override
@@ -153,7 +166,15 @@ public class GMailAppender extends AbstractAppender {
 		MimeMessage email = new MimeMessage(session);
 		email.addRecipients(RecipientType.TO, InternetAddress.parse(recipients));
 		email.setSubject(subject);
-		email.setText(body);
+		if (contentType == null) {
+			email.setText(body);
+		} else {
+			Multipart mp = new MimeMultipart();
+			MimeBodyPart part = new MimeBodyPart();
+			part.setContent(body, contentType);
+			mp.addBodyPart(part);
+			email.setContent(mp);
+		}
 		return email;
 	}
 	

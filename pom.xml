@@ -6,7 +6,7 @@
 
 	<groupId>eu.eureka-bpo.log4j2</groupId>
 	<artifactId>gmail-appender</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>GMail Log4j2 Appender</name>
